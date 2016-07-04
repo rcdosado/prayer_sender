@@ -17,4 +17,4 @@ except:
    print "socket() failed"
    sys.exit(1)
 
-
+s.sendto(da, (host, port))
