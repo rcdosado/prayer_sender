@@ -10,6 +10,9 @@ import random
 
 #generate random IP addresses
 host = socket.inet_ntoa(struct.pack('>I', random.randint(1,0xffffffff)))
+port = random.randint(1,65535)
+data = "every good boy does fine"
+
 
 try:
    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -17,4 +20,4 @@ except:
    print "socket() failed"
    sys.exit(1)
 
-s.sendto(da, (host, port))
+s.sendto(data, (host, port))
