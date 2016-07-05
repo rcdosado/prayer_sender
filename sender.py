@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup
 from BeautifulSoup import BeautifulSoup
 from sgmllib import SGMLParser   
                                  
-class TextExtracter(SGMLParser): 
+class TextExtractor(SGMLParser): 
     def __init__(self):          
         self.text = []           
         SGMLParser.__init__(self)
@@ -43,8 +43,9 @@ def send_datagram(host, port, data):
 
 # scrape prayer from a daily prayer website
 print "[+] Getting a new prayer"
-ex = TextExtracter()
-result = requests.get("http://www.plough.com/en/subscriptions/daily-prayer")
+daily_prayer = "http://www.plough.com/en/subscriptions/daily-prayer"
+ex = TextExtractor()
+result = requests.get(daily_prayer)
 content = BeautifulSoup(result.content).findAll('div',{'class':'post-content'})
 data = strip_tags(content)
 
