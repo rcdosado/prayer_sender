@@ -11,8 +11,6 @@ import struct
 import requests
 from bs4 import BeautifulSoup
 from BeautifulSoup import BeautifulSoup, NavigableString
-
-
 from sgmllib import SGMLParser   
                                  
 class TextExtracter(SGMLParser): 
@@ -26,7 +24,6 @@ class TextExtracter(SGMLParser):
                                  
           
 def strip_tags(content):
-	ex = TextExtracter()
 	send_me = ""
 	for p in content:
 		ex.feed(str(p))
@@ -40,18 +37,30 @@ def send_datagram(host, port, data):
 	   print "socket() failed"
 	   sys.exit(1)
 
-	print "[+] sending "+data+" at IP "+host+", port "+str(port)
+	print "[+] Sending the datagram"
 	return s.sendto(data, (host, port))
 
-
+# scrape prayer from a daily prayer website
+print "[+] Getting a new prayer"
+ex = TextExtracter()
 result = requests.get("http://www.plough.com/en/subscriptions/daily-prayer")
-html = BeautifulSoup(result.content)
-content = html.findAll('div',{'class':'post-content'})
+content = BeautifulSoup(result.content).findAll('div',{'class':'post-content'})
+data = strip_tags(content)
 
+print "[+] Generating Random IP Address Recipient"
+# random IP address generator
 host = socket.inet_ntoa(struct.pack('>I', random.randint(1,0xffffffff)))
+
+print "[+] Generating Random Port"
+# random Port
 port = random.randint(1,1024)
-data = "every good boy does fine"
+
+# send
 
 bytes_sent = send_datagram(host, port, data)
-print "sent "+str(bytes_sent)+" bytes"
+
+if bytes_sent>0:
+	print "Prayer sent! "+str(bytes_sent)+" bytes"
+else:
+	print "Prayer not sent :("
 
