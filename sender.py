@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # SUMMARY:
-# This script, sends a prayer to random IP addresses
+# This script, sends a prayer to random IPv4 address, 
+# and on random port within 1-1024
 # prayer is scrape from another website.
 # Coded by rcd
 
@@ -10,7 +11,7 @@ import random
 import struct 
 import requests
 from bs4 import BeautifulSoup
-from BeautifulSoup import BeautifulSoup, NavigableString
+from BeautifulSoup import BeautifulSoup
 from sgmllib import SGMLParser   
                                  
 class TextExtracter(SGMLParser): 
