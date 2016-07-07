@@ -10,10 +10,13 @@ import sys
 import random
 import struct 
 import requests
+import os.path
+import time
 from bs4 import BeautifulSoup
 from BeautifulSoup import BeautifulSoup
 from sgmllib import SGMLParser   
-                                 
+
+
 class TextExtractor(SGMLParser): 
     def __init__(self):          
         self.text = []           
@@ -22,8 +25,15 @@ class TextExtractor(SGMLParser):
         self.text.append(data)   
     def getvalue(self):          
         return ''.join(ex.text)  
-                                 
-          
+
+def generate_current_day_filename():
+	return time.strftime("%Y%m%d.txt")
+	#return time.strftime("%Y%m%d_%H%M%S.txt")
+
+def is_current_day_prayer_exists_already():
+	path = generate_current_day_filename()
+	return os.path.exists(path)
+	
 def strip_tags(content):
 	global ex
 	ex = TextExtractor()
@@ -43,13 +53,26 @@ def send_datagram(host, port, data):
 	print "[+] Sending the datagram"
 	return s.sendto(data, (host, port))
 
-# scrape prayer from a daily prayer website
-print "[+] Getting a new prayer"
-daily_prayer = "http://www.plough.com/en/subscriptions/daily-prayer"
+#check if a prayer for today currently exists?
+#import pdb; pdb.set_trace()
+if not is_current_day_prayer_exists_already():
+	# scrape prayer from a daily prayer website
+	print "[+] Getting a new prayer"
+	daily_prayer = "http://www.plough.com/en/subscriptions/daily-prayer"
 
-result = requests.get(daily_prayer)
-content = BeautifulSoup(result.content).findAll('div',{'class':'post-content'})
-data = strip_tags(content)
+	result = requests.get(daily_prayer)
+	content = BeautifulSoup(result.content).findAll('div',{'class':'post-content'})
+	data = strip_tags(content)
+	filename = generate_current_day_filename()
+	print "[+] writing to ",filename
+	f = open(filename,"w")
+	f.write(data)
+	print "[+] saved."
+else:
+	print "[+] Reading already existing prayer"
+	f = generate_current_day_filename()
+	data = open(f,"r").read()
+	#import pdb; pdb.set_trace()
 
 print "[+] Generating Random IP Address Recipient"
 # random IP address generator
@@ -65,7 +88,7 @@ bytes_sent = send_datagram(host, port, data)
 
 if bytes_sent>0:
 	print data
-	print "Prayer sent! "+str(bytes_sent)+" bytes"
+	print "Sent "+str(bytes_sent)+" bytes Prayer to "+str(host)
 else:
 	print "Prayer not sent :("
 
