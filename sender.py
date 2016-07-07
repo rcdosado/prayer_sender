@@ -25,6 +25,8 @@ class TextExtractor(SGMLParser):
                                  
           
 def strip_tags(content):
+	global ex
+	ex = TextExtractor()
 	send_me = ""
 	for p in content:
 		ex.feed(str(p))
@@ -44,7 +46,7 @@ def send_datagram(host, port, data):
 # scrape prayer from a daily prayer website
 print "[+] Getting a new prayer"
 daily_prayer = "http://www.plough.com/en/subscriptions/daily-prayer"
-ex = TextExtractor()
+
 result = requests.get(daily_prayer)
 content = BeautifulSoup(result.content).findAll('div',{'class':'post-content'})
 data = strip_tags(content)
@@ -62,6 +64,7 @@ port = random.randint(1,1024)
 bytes_sent = send_datagram(host, port, data)
 
 if bytes_sent>0:
+	print data
 	print "Prayer sent! "+str(bytes_sent)+" bytes"
 else:
 	print "Prayer not sent :("
